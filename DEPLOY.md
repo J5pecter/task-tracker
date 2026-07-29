@@ -89,7 +89,7 @@ gh repo create task-tracker --public --source=. --push
 
 # — or manually —
 # create an empty repo on github.com, then:
-# git remote add origin https://github.com/yeshmahajan/task-tracker.git
+# git remote add origin https://github.com/J5pecter/task-tracker.git
 # git branch -M main
 # git push -u origin main
 ```
@@ -97,7 +97,7 @@ gh repo create task-tracker --public --source=. --push
 ```
 [ ] 3.1  Repo is on GitHub and the "CI" workflow appears under the Actions tab.
 [ ] 3.2  Badges/Deploy button in README.md already point at
-         github.com/yeshmahajan/task-tracker.
+         github.com/J5pecter/task-tracker.
 ```
 
 > `.env` is git-ignored, so your secrets are NOT pushed. Good.

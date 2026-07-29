@@ -1,7 +1,7 @@
 # TaskTracker
 
-[![CI](https://github.com/yeshmahajan/task-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/yeshmahajan/task-tracker/actions/workflows/ci.yml)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/yeshmahajan/task-tracker)
+[![CI](https://github.com/J5pecter/task-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/J5pecter/task-tracker/actions/workflows/ci.yml)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/J5pecter/task-tracker)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 A ClickUp‑inspired, full‑stack task manager with **Microsoft Outlook** integration
