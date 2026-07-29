@@ -19,7 +19,7 @@ import { CommentThread } from '@/components/CommentThread';
 import { CustomFieldInput } from '@/components/CustomFieldInput';
 import { LoadingState } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { PriorityBadge, StatusBadge } from '@/components/ui/Badges';
+import { StatusBadge } from '@/components/ui/Badges';
 import { useToast } from '@/components/ui/Toast';
 import { PRIORITY_META, type TaskPriority, type Task } from '@/types';
 
