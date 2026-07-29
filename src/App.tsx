@@ -1,4 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
+import { isSupabaseConfigured } from './lib/supabase';
 import { useAuth } from './hooks/useAuth';
 import { AppLayout } from './components/AppLayout';
 import { LoadingState } from './components/ui/Spinner';
@@ -20,7 +22,31 @@ function Protected({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+function ConfigNeeded() {
+  return (
+    <div className="flex min-h-full items-center justify-center bg-slate-50 p-6">
+      <div className="card max-w-lg p-8 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+          <AlertTriangle className="h-6 w-6" />
+        </div>
+        <h1 className="text-xl font-bold text-slate-800">Setup needed</h1>
+        <p className="mt-2 text-sm text-slate-600">
+          This deployment is missing its Supabase configuration. Set{' '}
+          <code className="rounded bg-slate-100 px-1">VITE_SUPABASE_URL</code> and{' '}
+          <code className="rounded bg-slate-100 px-1">VITE_SUPABASE_ANON_KEY</code> in your
+          Netlify environment variables, then trigger a new deploy (these are baked in at
+          build time, so a rebuild is required).
+        </p>
+        <p className="mt-3 text-xs text-slate-400">
+          See DEPLOY.md §5 for the full list of variables.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  if (!isSupabaseConfigured) return <ConfigNeeded />;
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
