@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "netlify-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "port": 8888
+    },
+    {
+      "name": "vite-only",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev:vite"],
+      "port": 5173
+    }
+  ]
+}
