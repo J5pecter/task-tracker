@@ -4,7 +4,7 @@ import { Menu } from '@headlessui/react';
 import { CalendarClock, Clock, Flag, GitBranch } from 'lucide-react';
 import clsx from 'clsx';
 import { PRIORITY_META, type StatusDef, type Task, type TaskPriority } from '@/types';
-import { Avatar, LabelChip, StatusBadge } from './ui/Badges';
+import { Avatar, LabelChip } from './ui/Badges';
 import { formatDueDate, formatDuration, formatMinutes } from '@/lib/format';
 import { useUpdateTask } from '@/hooks/useTasks';
 
@@ -50,7 +50,7 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
 
           <div className="mt-2 flex flex-wrap items-center gap-2">
             <PriorityEditor task={task} />
-            {showStatus && <StatusBadge status={task.status} statuses={statuses} />}
+            {showStatus && <StatusEditor task={task} statuses={statuses} />}
             {task.labels?.map((l) => (
               <LabelChip key={l.id} name={l.name} color={l.color} />
             ))}
@@ -251,5 +251,61 @@ function DueDateEditor({ task }: { task: Task }) {
       <CalendarClock className="h-3.5 w-3.5" />
       {due?.label ?? 'Due'}
     </button>
+  );
+}
+
+// Fallback statuses for cards shown outside a single list (e.g. My Tasks, Search).
+const DEFAULT_STATUSES: StatusDef[] = [
+  { name: 'Open', color: '#94a3b8' },
+  { name: 'In Progress', color: '#3b82f6' },
+  { name: 'Done', color: '#22c55e' },
+];
+
+/** Inline status switcher — click the status pill to move the task along. */
+function StatusEditor({ task, statuses }: { task: Task; statuses?: StatusDef[] }) {
+  const update = useUpdateTask(task.list_id);
+  const options = statuses && statuses.length ? statuses : DEFAULT_STATUSES;
+  // Ensure the current status is always selectable, even if it's custom.
+  const all = options.some((s) => s.name === task.status)
+    ? options
+    : [{ name: task.status, color: '#94a3b8' }, ...options];
+  const current = all.find((s) => s.name === task.status) ?? { name: task.status, color: '#94a3b8' };
+
+  return (
+    <Menu as="div" className="relative">
+      <Menu.Button
+        onClick={(e) => e.stopPropagation()}
+        title="Change status"
+        className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium hover:opacity-80"
+        style={{ backgroundColor: `${current.color}1a`, color: current.color }}
+      >
+        <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: current.color }} />
+        {current.name}
+      </Menu.Button>
+      <Menu.Items
+        anchor="bottom start"
+        className="z-30 w-40 rounded-lg border border-slate-200 bg-white p-1 shadow-lg [--anchor-gap:4px] focus:outline-none"
+      >
+        {all.map((s) => (
+          <Menu.Item key={s.name}>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (s.name !== task.status) {
+                  update.mutate({
+                    id: task.id,
+                    patch: { status: s.name, is_completed: s.name.toLowerCase() === 'done' },
+                  });
+                }
+              }}
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-xs text-slate-700 data-[focus]:bg-slate-100"
+            >
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
+              {s.name}
+            </button>
+          </Menu.Item>
+        ))}
+      </Menu.Items>
+    </Menu>
   );
 }
