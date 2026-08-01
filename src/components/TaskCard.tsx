@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CalendarClock, Clock, GitBranch } from 'lucide-react';
 import clsx from 'clsx';
 import type { StatusDef, Task } from '@/types';
 import { Avatar, LabelChip, PriorityBadge, StatusBadge } from './ui/Badges';
 import { formatDueDate, formatDuration, formatMinutes } from '@/lib/format';
+import { useUpdateTask } from '@/hooks/useTasks';
 
 interface TaskCardProps {
   task: Task;
@@ -69,9 +71,7 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
                 {task.subtasks.filter((s) => s.is_completed).length}/{task.subtasks.length}
               </span>
             )}
-            {(task.estimated_minutes || (task.logged_seconds ?? 0) > 0) && (
-              <TimeChip estMin={task.estimated_minutes} loggedSec={task.logged_seconds ?? 0} />
-            )}
+            <EstimateEditor task={task} />
           </div>
         </div>
         {task.assignee && (
@@ -82,18 +82,90 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
   );
 }
 
-/** Tracked time vs. estimate. Turns red when actual exceeds the estimate. */
-function TimeChip({ estMin, loggedSec }: { estMin: number | null; loggedSec: number }) {
+/**
+ * Parses a friendly estimate string into minutes.
+ * Accepts "90", "1h", "1h 30m", "1h30m", "45m". Returns null to clear.
+ */
+function parseEstimate(input: string): number | null {
+  const s = input.trim().toLowerCase();
+  if (!s) return null;
+  if (/^\d+$/.test(s)) return parseInt(s, 10); // plain number = minutes
+  let mins = 0;
+  let matched = false;
+  const h = s.match(/(\d+)\s*h/);
+  if (h) {
+    mins += parseInt(h[1], 10) * 60;
+    matched = true;
+  }
+  const m = s.match(/(\d+)\s*m/);
+  if (m) {
+    mins += parseInt(m[1], 10);
+    matched = true;
+  }
+  return matched ? mins : null;
+}
+
+/**
+ * Tracked time vs. estimate — with the estimate editable inline. Click it to
+ * type a new estimate (e.g. "1h 30m"); Enter or blur saves, Esc cancels.
+ */
+function EstimateEditor({ task }: { task: Task }) {
+  const update = useUpdateTask(task.list_id);
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState('');
+
+  const estMin = task.estimated_minutes;
+  const loggedSec = task.logged_seconds ?? 0;
   const over = estMin != null && estMin > 0 && loggedSec > estMin * 60;
-  const actual = loggedSec > 0 ? formatDuration(loggedSec) : '0m';
+
+  function start(e: React.MouseEvent) {
+    e.stopPropagation();
+    setVal(estMin ? formatMinutes(estMin) : '');
+    setEditing(true);
+  }
+
+  function save() {
+    setEditing(false);
+    const parsed = parseEstimate(val);
+    if (parsed !== (estMin ?? null)) {
+      update.mutate({ id: task.id, patch: { estimated_minutes: parsed } });
+    }
+  }
+
+  if (editing) {
+    return (
+      <input
+        autoFocus
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => {
+          e.stopPropagation();
+          if (e.key === 'Enter') save();
+          if (e.key === 'Escape') setEditing(false);
+        }}
+        onBlur={save}
+        placeholder="e.g. 1h 30m"
+        className="w-24 rounded border border-slate-300 px-1.5 py-0.5 text-xs focus:border-brand-500 focus:outline-none"
+      />
+    );
+  }
+
+  const spent = loggedSec > 0 ? formatDuration(loggedSec) : '';
+  const est = estMin ? formatMinutes(estMin) : '';
+  const label = spent && est ? `${spent} / ${est}` : spent ? `${spent} / —` : est || 'Estimate';
+
   return (
-    <span
-      className={clsx('inline-flex items-center gap-1 text-xs', over ? 'text-red-600' : 'text-slate-500')}
-      title="Time spent / estimated"
+    <button
+      onClick={start}
+      title="Click to edit estimate"
+      className={clsx(
+        'inline-flex items-center gap-1 rounded px-1 text-xs hover:bg-slate-100',
+        over ? 'text-red-600' : est || spent ? 'text-slate-500' : 'text-slate-400',
+      )}
     >
       <Clock className="h-3.5 w-3.5" />
-      {actual}
-      {estMin ? ` / ${formatMinutes(estMin)}` : ''}
-    </span>
+      {label}
+    </button>
   );
 }
