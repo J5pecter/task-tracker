@@ -15,9 +15,9 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, Trash2 } from 'lucide-react';
 import { useList } from '@/hooks/useProjects';
-import { useTasks, useUpdateTask } from '@/hooks/useTasks';
+import { useTasks, useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
 import { ListHeader } from '@/components/ListHeader';
 import { LoadingState } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -122,6 +122,7 @@ function Row({
     id: task.id,
   });
   const navigate = useNavigate();
+  const del = useDeleteTask(task.list_id);
   const due = formatDueDate(task.due_date);
 
   return (
@@ -163,7 +164,16 @@ function Row({
       <div className={clsx('text-xs', due?.overdue ? 'text-red-600' : 'text-slate-500')}>
         {due?.label ?? '—'}
       </div>
-      <span />
+      <button
+        className="text-slate-300 hover:text-red-600"
+        title="Delete task"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (confirm(`Delete "${task.title}"?`)) del.mutate(task.id);
+        }}
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
     </div>
   );
 }

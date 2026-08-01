@@ -1,12 +1,13 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle2, Clock, Flame, Inbox, Plus } from 'lucide-react';
-import { useMyTasks, useUpdateTask } from '@/hooks/useTasks';
-import { useWorkspaces, useCreateList } from '@/hooks/useProjects';
+import { useMyTasks, useUpdateTask, useCreateTask } from '@/hooks/useTasks';
+import { useWorkspaces, useCreateList, useLists } from '@/hooks/useProjects';
 import { TaskCard } from '@/components/TaskCard';
 import { LoadingState } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useToast } from '@/components/ui/Toast';
+import { useAuth } from '@/hooks/useAuth';
 import type { Task } from '@/types';
 import { isPast, isToday } from 'date-fns';
 
@@ -15,9 +16,32 @@ export default function Dashboard() {
   const update = useUpdateTask();
   const navigate = useNavigate();
   const { notify } = useToast();
+  const { user } = useAuth();
   const { data: workspaces } = useWorkspaces();
   const wsId = workspaces?.[0]?.id ?? '';
   const createList = useCreateList(wsId);
+  const { data: lists } = useLists(wsId);
+
+  const [quickTitle, setQuickTitle] = useState('');
+  const [selListId, setSelListId] = useState('');
+  const targetList = selListId || lists?.[0]?.id || '';
+  const createTask = useCreateTask(targetList);
+
+  async function quickAdd(e: React.FormEvent) {
+    e.preventDefault();
+    if (!quickTitle.trim() || !targetList) return;
+    try {
+      await createTask.mutateAsync({
+        title: quickTitle.trim(),
+        list_id: targetList,
+        assignee_id: user?.id ?? null,
+      });
+      setQuickTitle('');
+      notify('Task added', 'success');
+    } catch (err) {
+      notify((err as Error).message, 'error');
+    }
+  }
 
   async function createFirstList() {
     if (!wsId) {
@@ -75,6 +99,32 @@ export default function Dashboard() {
         <StatCard icon={Inbox} label="Upcoming" value={groups.upcoming.length} tone="brand" />
         <StatCard icon={CheckCircle2} label="Completed" value={completedCount} tone="green" />
       </div>
+
+      {lists && lists.length > 0 && (
+        <form onSubmit={quickAdd} className="mb-6 flex flex-wrap gap-2">
+          <input
+            value={quickTitle}
+            onChange={(e) => setQuickTitle(e.target.value)}
+            placeholder="Add a task and assign it to yourself…"
+            className="input min-w-0 flex-1"
+          />
+          <select
+            value={targetList}
+            onChange={(e) => setSelListId(e.target.value)}
+            className="input w-40 shrink-0"
+            title="List to add into"
+          >
+            {lists.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.name}
+              </option>
+            ))}
+          </select>
+          <button className="btn-primary shrink-0" type="submit" disabled={!quickTitle.trim() || createTask.isPending}>
+            <Plus className="h-4 w-4" /> Add
+          </button>
+        </form>
+      )}
 
       {!tasks || tasks.length === 0 ? (
         <EmptyState

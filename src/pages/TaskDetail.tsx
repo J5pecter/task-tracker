@@ -19,14 +19,16 @@ import { CommentThread } from '@/components/CommentThread';
 import { CustomFieldInput } from '@/components/CustomFieldInput';
 import { LoadingState } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBadge } from '@/components/ui/Badges';
+import { Avatar, StatusBadge } from '@/components/ui/Badges';
 import { useToast } from '@/components/ui/Toast';
+import { useAuth } from '@/hooks/useAuth';
 import { PRIORITY_META, type TaskPriority, type Task } from '@/types';
 
 export default function TaskDetail() {
   const { taskId } = useParams<{ taskId: string }>();
   const navigate = useNavigate();
   const { notify } = useToast();
+  const { user } = useAuth();
   const { data, isLoading } = useTask(taskId);
   const task = data?.task;
   const { data: list } = useList(task?.list_id);
@@ -148,6 +150,26 @@ export default function TaskDetail() {
                 defaultValue={task.estimated_minutes ?? ''}
                 onBlur={(e) => patch({ estimated_minutes: e.target.value ? Number(e.target.value) : null })}
               />
+            </Field>
+            <Field label="Assignee">
+              {task.assignee_id ? (
+                <div className="flex items-center gap-2">
+                  <Avatar name={task.assignee?.full_name} email={task.assignee?.email} size={24} />
+                  <span className="flex-1 truncate text-sm text-slate-700">
+                    {task.assignee?.full_name || task.assignee?.email || 'Assigned'}
+                  </span>
+                  <button
+                    className="text-xs text-slate-400 hover:text-red-600"
+                    onClick={() => patch({ assignee_id: null })}
+                  >
+                    Unassign
+                  </button>
+                </div>
+              ) : (
+                <button className="btn-secondary w-full" onClick={() => patch({ assignee_id: user?.id ?? null })}>
+                  Assign to me
+                </button>
+              )}
             </Field>
             {task.recurrence && (
               <div className="text-xs text-slate-500">Repeats {task.recurrence.freq}</div>

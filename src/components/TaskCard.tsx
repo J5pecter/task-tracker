@@ -1,12 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Menu } from '@headlessui/react';
-import { CalendarClock, Clock, Flag, GitBranch } from 'lucide-react';
+import {
+  CalendarClock,
+  Clock,
+  ExternalLink,
+  Flag,
+  GitBranch,
+  MoreVertical,
+  Trash2,
+  UserMinus,
+  UserPlus,
+} from 'lucide-react';
 import clsx from 'clsx';
 import { PRIORITY_META, type StatusDef, type Task, type TaskPriority } from '@/types';
 import { Avatar, LabelChip } from './ui/Badges';
 import { formatDueDate, formatDuration, formatMinutes } from '@/lib/format';
-import { useUpdateTask } from '@/hooks/useTasks';
+import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
+import { useAuth } from '@/hooks/useAuth';
 
 interface TaskCardProps {
   task: Task;
@@ -64,11 +75,76 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
             <EstimateEditor task={task} />
           </div>
         </div>
-        {task.assignee && (
-          <Avatar name={task.assignee.full_name} email={task.assignee.email} size={26} />
-        )}
+        <div className="flex shrink-0 items-center gap-1">
+          {task.assignee && (
+            <Avatar name={task.assignee.full_name} email={task.assignee.email} size={26} />
+          )}
+          <CardMenu task={task} />
+        </div>
       </div>
     </div>
+  );
+}
+
+/** Overflow menu on each card: open, assign to me / unassign, delete. */
+function CardMenu({ task }: { task: Task }) {
+  const { user } = useAuth();
+  const update = useUpdateTask(task.list_id);
+  const del = useDeleteTask(task.list_id);
+  const navigate = useNavigate();
+  const mine = !!user && task.assignee_id === user.id;
+
+  const itemClass = 'flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs text-slate-700 data-[focus]:bg-slate-100';
+
+  return (
+    <Menu as="div" className="relative">
+      <Menu.Button
+        onClick={(e) => e.stopPropagation()}
+        title="More actions"
+        className="rounded p-1 text-slate-300 hover:bg-slate-100 hover:text-slate-600"
+      >
+        <MoreVertical className="h-4 w-4" />
+      </Menu.Button>
+      <Menu.Items
+        anchor="bottom end"
+        className="z-30 w-44 rounded-lg border border-slate-200 bg-white p-1 shadow-lg [--anchor-gap:4px] focus:outline-none"
+      >
+        <Menu.Item>
+          <button
+            className={itemClass}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/task/${task.id}`);
+            }}
+          >
+            <ExternalLink className="h-3.5 w-3.5" /> Open
+          </button>
+        </Menu.Item>
+        <Menu.Item>
+          <button
+            className={itemClass}
+            onClick={(e) => {
+              e.stopPropagation();
+              update.mutate({ id: task.id, patch: { assignee_id: mine ? null : user?.id ?? null } });
+            }}
+          >
+            {mine ? <UserMinus className="h-3.5 w-3.5" /> : <UserPlus className="h-3.5 w-3.5" />}
+            {mine ? 'Unassign me' : 'Assign to me'}
+          </button>
+        </Menu.Item>
+        <Menu.Item>
+          <button
+            className={clsx(itemClass, 'text-red-600')}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm(`Delete "${task.title}"?`)) del.mutate(task.id);
+            }}
+          >
+            <Trash2 className="h-3.5 w-3.5" /> Delete
+          </button>
+        </Menu.Item>
+      </Menu.Items>
+    </Menu>
   );
 }
 
