@@ -10,6 +10,7 @@ import {
   Plus,
   Settings as SettingsIcon,
   CalendarDays,
+  Users,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useWorkspaces, useLists, useCreateList, useCreateWorkspace } from '@/hooks/useProjects';
@@ -17,6 +18,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useToast } from './ui/Toast';
 import { Avatar } from './ui/Badges';
 import { Modal } from './ui/Modal';
+import { MembersModal } from './MembersModal';
 
 export function Sidebar() {
   const { data: workspaces } = useWorkspaces();
@@ -115,6 +117,7 @@ function WorkspaceTree({
   const { notify } = useToast();
   const [adding, setAdding] = useState(false);
   const [listName, setListName] = useState('');
+  const [showMembers, setShowMembers] = useState(false);
 
   async function addList() {
     if (!listName.trim()) return;
@@ -136,6 +139,13 @@ function WorkspaceTree({
         <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: color }} />
         <span className="flex-1 truncate text-sm font-medium text-slate-700">{name}</span>
         <button
+          onClick={() => setShowMembers(true)}
+          className="text-slate-400 hover:text-brand-600"
+          title="Members"
+        >
+          <Users className="h-4 w-4" />
+        </button>
+        <button
           onClick={() => setAdding(true)}
           className="text-slate-400 hover:text-brand-600"
           title="Add list"
@@ -143,6 +153,12 @@ function WorkspaceTree({
           <Plus className="h-4 w-4" />
         </button>
       </div>
+      <MembersModal
+        workspaceId={workspaceId}
+        workspaceName={name}
+        open={showMembers}
+        onClose={() => setShowMembers(false)}
+      />
       {open && (
         <div className="ml-5 border-l border-slate-100 pl-2">
           {lists?.map((l) => (

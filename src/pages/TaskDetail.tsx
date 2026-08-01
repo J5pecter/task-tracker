@@ -22,6 +22,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Avatar, StatusBadge } from '@/components/ui/Badges';
 import { useToast } from '@/components/ui/Toast';
 import { useAuth } from '@/hooks/useAuth';
+import { useWorkspaceMembers } from '@/hooks/useMembers';
 import { PRIORITY_META, type TaskPriority, type Task } from '@/types';
 
 export default function TaskDetail() {
@@ -32,6 +33,7 @@ export default function TaskDetail() {
   const { data, isLoading } = useTask(taskId);
   const task = data?.task;
   const { data: list } = useList(task?.list_id);
+  const { data: members } = useWorkspaceMembers(list?.workspace_id);
   const update = useUpdateTask(task?.list_id);
   const del = useDeleteTask(task?.list_id);
 
@@ -152,24 +154,24 @@ export default function TaskDetail() {
               />
             </Field>
             <Field label="Assignee">
-              {task.assignee_id ? (
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                {task.assignee_id && (
                   <Avatar name={task.assignee?.full_name} email={task.assignee?.email} size={24} />
-                  <span className="flex-1 truncate text-sm text-slate-700">
-                    {task.assignee?.full_name || task.assignee?.email || 'Assigned'}
-                  </span>
-                  <button
-                    className="text-xs text-slate-400 hover:text-red-600"
-                    onClick={() => patch({ assignee_id: null })}
-                  >
-                    Unassign
-                  </button>
-                </div>
-              ) : (
-                <button className="btn-secondary w-full" onClick={() => patch({ assignee_id: user?.id ?? null })}>
-                  Assign to me
-                </button>
-              )}
+                )}
+                <select
+                  className="input flex-1"
+                  value={task.assignee_id ?? ''}
+                  onChange={(e) => patch({ assignee_id: e.target.value || null })}
+                >
+                  <option value="">Unassigned</option>
+                  {members?.members.map((mem) => (
+                    <option key={mem.user_id} value={mem.user_id}>
+                      {(mem.profile?.full_name || mem.profile?.email || 'User') +
+                        (mem.user_id === user?.id ? ' (me)' : '')}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </Field>
             {task.recurrence && (
               <div className="text-xs text-slate-500">Repeats {task.recurrence.freq}</div>

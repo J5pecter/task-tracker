@@ -85,7 +85,9 @@ npm install -g netlify-cli   # for `npm run dev`
    **Project URL**, the **anon/publishable** key, and the **service_role/secret** key.
 2. Open **SQL Editor**, paste [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql),
    and run it (creates tables, RLS policies, the `attachments` storage bucket, and
-   a trigger that provisions a profile + personal workspace on signup).
+   a trigger that provisions a profile + personal workspace on signup). Then run
+   [`supabase/migrations/0002_team.sql`](supabase/migrations/0002_team.sql) to enable
+   team invites + member assignment.
 3. **Authentication → Providers → Email:** disable "Confirm email" for the
    quickest start (or confirm via email).
 4. **Authentication → URL Configuration:** set **Site URL** to your app URL

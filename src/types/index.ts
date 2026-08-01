@@ -146,6 +146,20 @@ export interface Attachment {
   created_at: string;
 }
 
+export interface WorkspaceMember {
+  user_id: string;
+  role: MemberRole;
+  profile: Pick<UserProfile, 'id' | 'full_name' | 'email' | 'avatar_url'> | null;
+}
+
+export interface WorkspaceInvite {
+  id: string;
+  workspace_id: string;
+  email: string;
+  role: MemberRole;
+  created_at: string;
+}
+
 export const PRIORITY_META: Record<TaskPriority, { label: string; color: string }> = {
   urgent: { label: 'Urgent', color: '#ef4444' },
   high: { label: 'High', color: '#f97316' },
