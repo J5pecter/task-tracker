@@ -1,15 +1,36 @@
 import { useMemo } from 'react';
-import { CheckCircle2, Clock, Flame, Inbox } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { CheckCircle2, Clock, Flame, Inbox, Plus } from 'lucide-react';
 import { useMyTasks, useUpdateTask } from '@/hooks/useTasks';
+import { useWorkspaces, useCreateList } from '@/hooks/useProjects';
 import { TaskCard } from '@/components/TaskCard';
 import { LoadingState } from '@/components/ui/Spinner';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useToast } from '@/components/ui/Toast';
 import type { Task } from '@/types';
 import { isPast, isToday } from 'date-fns';
 
 export default function Dashboard() {
   const { data: tasks, isLoading } = useMyTasks();
   const update = useUpdateTask();
+  const navigate = useNavigate();
+  const { notify } = useToast();
+  const { data: workspaces } = useWorkspaces();
+  const wsId = workspaces?.[0]?.id ?? '';
+  const createList = useCreateList(wsId);
+
+  async function createFirstList() {
+    if (!wsId) {
+      notify('Create a workspace first (sidebar).', 'error');
+      return;
+    }
+    try {
+      const res = await createList.mutateAsync({ name: 'Tasks', workspace_id: wsId });
+      navigate(`/list/${res.list.id}`);
+    } catch (e) {
+      notify((e as Error).message, 'error');
+    }
+  }
 
   const groups = useMemo(() => {
     const overdue: Task[] = [];
@@ -38,8 +59,15 @@ export default function Dashboard() {
 
   return (
     <div className="mx-auto max-w-4xl p-6">
-      <h1 className="mb-1 text-2xl font-bold text-slate-800">My Tasks</h1>
-      <p className="mb-6 text-sm text-slate-500">Everything assigned to you, across all workspaces.</p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="mb-1 text-2xl font-bold text-slate-800">My Tasks</h1>
+          <p className="text-sm text-slate-500">Everything assigned to you, across all workspaces.</p>
+        </div>
+        <button className="btn-secondary shrink-0" onClick={createFirstList} disabled={createList.isPending}>
+          <Plus className="h-4 w-4" /> New list
+        </button>
+      </div>
 
       <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         <StatCard icon={Flame} label="Overdue" value={groups.overdue.length} tone="red" />
@@ -50,8 +78,13 @@ export default function Dashboard() {
 
       {!tasks || tasks.length === 0 ? (
         <EmptyState
-          title="No tasks assigned to you yet"
-          description="Open a list and create a task, then assign it to yourself to see it here."
+          title="No tasks yet"
+          description="Create a list, then add tasks to it — set a status, estimate the time, and track it."
+          action={
+            <button className="btn-primary" onClick={createFirstList} disabled={createList.isPending}>
+              <Plus className="h-4 w-4" /> Create a list
+            </button>
+          }
         />
       ) : (
         <div className="space-y-6">

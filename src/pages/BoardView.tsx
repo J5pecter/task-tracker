@@ -54,7 +54,7 @@ export default function BoardView() {
 
   return (
     <div className="flex h-full flex-col">
-      <ListHeader list={list} />
+      <ListHeader list={list} tasks={tasks || []} />
       <div className="scrollbar-thin flex-1 overflow-x-auto p-6">
         <DndContext sensors={sensors} onDragEnd={onDragEnd}>
           <div className="flex h-full gap-4">

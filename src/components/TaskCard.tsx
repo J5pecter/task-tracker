@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { CalendarClock, GitBranch } from 'lucide-react';
+import { CalendarClock, Clock, GitBranch } from 'lucide-react';
 import clsx from 'clsx';
 import type { StatusDef, Task } from '@/types';
 import { Avatar, LabelChip, PriorityBadge, StatusBadge } from './ui/Badges';
-import { formatDueDate } from '@/lib/format';
+import { formatDueDate, formatDuration, formatMinutes } from '@/lib/format';
 
 interface TaskCardProps {
   task: Task;
@@ -69,6 +69,9 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
                 {task.subtasks.filter((s) => s.is_completed).length}/{task.subtasks.length}
               </span>
             )}
+            {(task.estimated_minutes || (task.logged_seconds ?? 0) > 0) && (
+              <TimeChip estMin={task.estimated_minutes} loggedSec={task.logged_seconds ?? 0} />
+            )}
           </div>
         </div>
         {task.assignee && (
@@ -76,5 +79,21 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
         )}
       </div>
     </div>
+  );
+}
+
+/** Tracked time vs. estimate. Turns red when actual exceeds the estimate. */
+function TimeChip({ estMin, loggedSec }: { estMin: number | null; loggedSec: number }) {
+  const over = estMin != null && estMin > 0 && loggedSec > estMin * 60;
+  const actual = loggedSec > 0 ? formatDuration(loggedSec) : '0m';
+  return (
+    <span
+      className={clsx('inline-flex items-center gap-1 text-xs', over ? 'text-red-600' : 'text-slate-500')}
+      title="Time spent / estimated"
+    >
+      <Clock className="h-3.5 w-3.5" />
+      {actual}
+      {estMin ? ` / ${formatMinutes(estMin)}` : ''}
+    </span>
   );
 }

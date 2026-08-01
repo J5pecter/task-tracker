@@ -5,14 +5,19 @@ import { getUserClient } from './_shared/supabaseAdmin';
 import { method, parseBody } from './_shared/crud';
 
 const TASK_SELECT =
-  '*, labels:task_labels(label:labels(*)), assignee:user_profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url)';
+  '*, labels:task_labels(label:labels(*)), assignee:user_profiles!tasks_assignee_id_fkey(id, full_name, email, avatar_url), time_entries(duration_seconds)';
 
-// Flatten the nested label join into a simple labels[] array.
+// Flatten the nested label join into a simple labels[] array and sum tracked time.
 function shapeTask(row: any) {
   if (!row) return row;
+  const logged = Array.isArray(row.time_entries)
+    ? row.time_entries.reduce((s: number, e: any) => s + (e.duration_seconds || 0), 0)
+    : 0;
+  const { time_entries, ...rest } = row;
   return {
-    ...row,
+    ...rest,
     labels: Array.isArray(row.labels) ? row.labels.map((l: any) => l.label).filter(Boolean) : [],
+    logged_seconds: logged,
   };
 }
 

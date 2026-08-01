@@ -71,6 +71,7 @@ export default function ListView() {
     <div>
       <ListHeader
         list={list}
+        tasks={topLevel}
         right={<TaskFilters value={filters} onChange={setFilters} statuses={list.statuses} />}
       />
       <div className="p-6">

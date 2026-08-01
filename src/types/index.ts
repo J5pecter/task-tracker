@@ -86,6 +86,9 @@ export interface Task {
   labels?: Label[];
   subtasks?: Task[];
   assignee?: Pick<UserProfile, 'id' | 'full_name' | 'email' | 'avatar_url'> | null;
+  // Total tracked time across this task's time entries (seconds). Populated by
+  // the tasks endpoint.
+  logged_seconds?: number;
 }
 
 export interface TaskDependency {

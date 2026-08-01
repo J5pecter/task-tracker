@@ -137,7 +137,7 @@ function WorkspaceTree({
         <span className="flex-1 truncate text-sm font-medium text-slate-700">{name}</span>
         <button
           onClick={() => setAdding(true)}
-          className="text-slate-400 opacity-0 group-hover:opacity-100 hover:text-slate-600"
+          className="text-slate-400 hover:text-brand-600"
           title="Add list"
         >
           <Plus className="h-4 w-4" />
@@ -177,7 +177,12 @@ function WorkspaceTree({
             </div>
           )}
           {lists && lists.length === 0 && !adding && (
-            <div className="px-2 py-1 text-xs text-slate-400">No lists yet</div>
+            <button
+              onClick={() => setAdding(true)}
+              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-brand-600 hover:underline"
+            >
+              <Plus className="h-3 w-3" /> New list
+            </button>
           )}
         </div>
       )}
