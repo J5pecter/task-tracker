@@ -78,11 +78,12 @@ export default function ListView() {
           <EmptyState title="No tasks match" description="Create a task or adjust your filters." />
         ) : (
           <div className="card overflow-hidden">
-            <div className="grid grid-cols-[24px_1fr_140px_120px_110px_40px] items-center gap-3 border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <div className="grid grid-cols-[24px_1fr_140px_120px_90px_110px_40px] items-center gap-3 border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
               <span />
               <span>Task</span>
               <span>Status</span>
               <span>Priority</span>
+              <span>Est.</span>
               <span>Due</span>
               <span />
             </div>
@@ -127,7 +128,7 @@ function Row({
       ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
       className={clsx(
-        'grid grid-cols-[24px_1fr_140px_120px_110px_40px] items-center gap-3 border-b border-slate-100 px-4 py-2.5 hover:bg-slate-50',
+        'grid grid-cols-[24px_1fr_140px_120px_90px_110px_40px] items-center gap-3 border-b border-slate-100 px-4 py-2.5 hover:bg-slate-50',
         isDragging && 'bg-brand-50 shadow',
       )}
     >
@@ -157,10 +158,20 @@ function Row({
       </div>
       <StatusBadge status={task.status} statuses={statuses} />
       <div>{task.priority !== 'normal' ? <PriorityBadge priority={task.priority} /> : <span className="text-xs text-slate-400">—</span>}</div>
+      <div className="text-xs text-slate-500">{estimateLabel(task.estimated_minutes)}</div>
       <div className={clsx('text-xs', due?.overdue ? 'text-red-600' : 'text-slate-500')}>
         {due?.label ?? '—'}
       </div>
       <span />
     </div>
   );
+}
+
+function estimateLabel(min: number | null): string {
+  if (!min) return '—';
+  const h = Math.floor(min / 60);
+  const m = min % 60;
+  if (h && m) return `${h}h ${m}m`;
+  if (h) return `${h}h`;
+  return `${m}m`;
 }

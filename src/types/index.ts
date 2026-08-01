@@ -143,34 +143,6 @@ export interface Attachment {
   created_at: string;
 }
 
-// ---- Outlook (Microsoft Graph) shapes, fetched live, never persisted ----
-export interface OutlookTaskList {
-  id: string;
-  displayName: string;
-}
-
-export interface OutlookTask {
-  id: string;
-  listId: string;
-  title: string;
-  status: 'notStarted' | 'inProgress' | 'completed' | 'waitingOnOthers' | 'deferred';
-  importance: 'low' | 'normal' | 'high';
-  body?: string;
-  dueDateTime?: string | null;
-  createdDateTime?: string;
-  isImported?: boolean; // set client-side if a local task links to it
-}
-
-export interface OutlookEvent {
-  id: string;
-  subject: string;
-  start: string;
-  end: string;
-  isAllDay: boolean;
-  location?: string;
-  webLink?: string;
-}
-
 export const PRIORITY_META: Record<TaskPriority, { label: string; color: string }> = {
   urgent: { label: 'Urgent', color: '#ef4444' },
   high: { label: 'High', color: '#f97316' },

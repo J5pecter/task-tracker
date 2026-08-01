@@ -17,14 +17,13 @@ function shapeTask(row: any) {
 }
 
 /**
- * CRUD for tasks + subtasks, plus search, dependencies, and Outlook import.
+ * CRUD for tasks + subtasks, plus search and dependencies.
  *
  *   GET    /tasks?listId=<id>                 -> tasks in a list (top-level + subtasks)
  *   GET    /tasks?id=<id>                      -> single task (with subtasks)
  *   GET    /tasks?mine=1                       -> tasks assigned to the current user
  *   GET    /tasks?search=<q>                   -> full-text search across accessible tasks
  *   POST   /tasks                              -> create task (body)
- *   POST   /tasks?action=import                -> import an Outlook task (body: {listId, outlook})
  *   PATCH  /tasks?id=<id>                       -> update task
  *   DELETE /tasks?id=<id>                       -> delete task
  *   POST   /tasks?action=dependency            -> add dependency {task_id, depends_on_task_id, type}
@@ -93,33 +92,6 @@ const handler: Handler = async (event: HandlerEvent) => {
     }
 
     if (m === 'POST') {
-      // Import an Outlook task into a local list.
-      if (q.action === 'import') {
-        const { listId, outlook } = parseBody<{ listId: string; outlook: any }>(event);
-        if (!listId || !outlook) return json(400, { error: 'listId and outlook required' });
-        const priority =
-          outlook.importance === 'high' ? 'high' : outlook.importance === 'low' ? 'low' : 'normal';
-        const { data, error } = await db
-          .from('tasks')
-          .insert({
-            list_id: listId,
-            title: outlook.title,
-            description: outlook.body ?? null,
-            status: outlook.status === 'completed' ? 'Done' : 'Open',
-            is_completed: outlook.status === 'completed',
-            priority,
-            due_date: outlook.dueDateTime ?? null,
-            outlook_task_id: outlook.id,
-            outlook_list_id: outlook.listId,
-            outlook_synced_at: new Date().toISOString(),
-            created_by: user.id,
-          })
-          .select(TASK_SELECT)
-          .single();
-        if (error) throw error;
-        return json(201, { task: shapeTask(data) });
-      }
-
       // Add a dependency.
       if (q.action === 'dependency') {
         const body = parseBody(event);

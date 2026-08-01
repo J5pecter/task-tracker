@@ -23,7 +23,4 @@ export const qk = {
   comments: (taskId: string) => ['comments', taskId] as const,
   timeEntries: (taskId: string) => ['time-entries', taskId] as const,
   customFields: (listId: string) => ['custom-fields', listId] as const,
-  outlookLists: ['outlook', 'lists'] as const,
-  outlookTasks: (listId: string) => ['outlook', 'tasks', listId] as const,
-  outlookEvents: ['outlook', 'events'] as const,
 };

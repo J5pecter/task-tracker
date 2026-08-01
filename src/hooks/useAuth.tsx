@@ -15,7 +15,6 @@ interface AuthContextValue {
   loading: boolean;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
-  signInWithAzure: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -50,18 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           email,
           password,
           options: { data: { full_name: fullName } },
-        });
-        if (error) throw error;
-      },
-      async signInWithAzure() {
-        // Optional: sign in *and* identify via Microsoft using Supabase's Azure
-        // provider. Configure it in Supabase Auth settings to enable this button.
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'azure',
-          options: {
-            scopes: 'openid profile email offline_access User.Read',
-            redirectTo: window.location.origin,
-          },
         });
         if (error) throw error;
       },

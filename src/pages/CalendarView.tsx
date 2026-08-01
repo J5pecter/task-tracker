@@ -12,14 +12,13 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
-import { ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import clsx from 'clsx';
 import { useList } from '@/hooks/useProjects';
 import { useTasks, useMyTasks } from '@/hooks/useTasks';
-import { useOutlookEvents } from '@/hooks/useOutlookTasks';
 import { ListHeader } from '@/components/ListHeader';
 import { LoadingState } from '@/components/ui/Spinner';
-import { PRIORITY_META, type Task, type OutlookEvent } from '@/types';
+import { PRIORITY_META, type Task } from '@/types';
 
 export default function CalendarView() {
   const { listId } = useParams<{ listId: string }>();
@@ -37,8 +36,6 @@ export default function CalendarView() {
   const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
   const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
-  const { data: events = [] } = useOutlookEvents(gridStart.toISOString(), gridEnd.toISOString());
-
   const days = useMemo(
     () => eachDayOfInterval({ start: gridStart, end: gridEnd }),
     [gridStart, gridEnd],
@@ -53,15 +50,6 @@ export default function CalendarView() {
     });
     return map;
   }, [tasks]);
-
-  const eventsByDay = useMemo(() => {
-    const map = new Map<string, OutlookEvent[]>();
-    events.forEach((e) => {
-      const key = format(new Date(e.start), 'yyyy-MM-dd');
-      (map.get(key) ?? map.set(key, []).get(key)!).push(e);
-    });
-    return map;
-  }, [events]);
 
   const header = (
     <div className="flex items-center gap-2">
@@ -96,7 +84,6 @@ export default function CalendarView() {
           {days.map((day) => {
             const key = format(day, 'yyyy-MM-dd');
             const dayTasks = tasksByDay.get(key) ?? [];
-            const dayEvents = eventsByDay.get(key) ?? [];
             return (
               <div
                 key={key}
@@ -126,19 +113,6 @@ export default function CalendarView() {
                     >
                       {t.title}
                     </button>
-                  ))}
-                  {dayEvents.map((e) => (
-                    <a
-                      key={e.id}
-                      href={e.webLink}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="flex items-center gap-1 truncate rounded bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-700"
-                      title={`${e.subject} (Outlook)`}
-                    >
-                      <ExternalLink className="h-2.5 w-2.5 shrink-0" />
-                      {e.subject}
-                    </a>
                   ))}
                 </div>
               </div>

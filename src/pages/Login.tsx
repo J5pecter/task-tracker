@@ -6,7 +6,7 @@ import { useToast } from '@/components/ui/Toast';
 import { Spinner } from '@/components/ui/Spinner';
 
 export default function Login() {
-  const { session, loading, signInWithPassword, signUp, signInWithAzure } = useAuth();
+  const { session, loading, signInWithPassword, signUp } = useAuth();
   const { notify } = useToast();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -79,22 +79,6 @@ export default function Login() {
             {mode === 'signin' ? 'Sign in' : 'Sign up'}
           </button>
         </form>
-
-        <div className="my-4 flex items-center gap-3 text-xs text-slate-400">
-          <div className="h-px flex-1 bg-slate-200" />
-          OR
-          <div className="h-px flex-1 bg-slate-200" />
-        </div>
-
-        <button onClick={() => signInWithAzure().catch((e) => notify(e.message, 'error'))} className="btn-secondary w-full">
-          <svg className="h-4 w-4" viewBox="0 0 23 23" aria-hidden>
-            <path fill="#f35325" d="M1 1h10v10H1z" />
-            <path fill="#81bc06" d="M12 1h10v10H12z" />
-            <path fill="#05a6f0" d="M1 12h10v10H1z" />
-            <path fill="#ffba08" d="M12 12h10v10H12z" />
-          </svg>
-          Continue with Microsoft
-        </button>
 
         <p className="mt-6 text-center text-sm text-slate-500">
           {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}

@@ -76,19 +76,6 @@ export function useDeleteTask(listId?: string) {
   });
 }
 
-export function useImportOutlookTask(listId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (outlook: unknown) =>
-      callFunction<{ task: Task }>('tasks', {
-        method: 'POST',
-        query: { action: 'import' },
-        body: { listId, outlook },
-      }),
-    onSuccess: () => invalidateTaskViews(qc, listId),
-  });
-}
-
 export function useAddDependency(taskId: string) {
   const qc = useQueryClient();
   return useMutation({

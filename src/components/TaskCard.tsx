@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { CalendarClock, GitBranch, MessageSquare } from 'lucide-react';
+import { CalendarClock, GitBranch } from 'lucide-react';
 import clsx from 'clsx';
 import type { StatusDef, Task } from '@/types';
 import { Avatar, LabelChip, PriorityBadge, StatusBadge } from './ui/Badges';
@@ -67,11 +67,6 @@ export function TaskCard({ task, statuses, showStatus = true, onToggleComplete, 
               <span className="inline-flex items-center gap-1 text-xs text-slate-500">
                 <GitBranch className="h-3.5 w-3.5" />
                 {task.subtasks.filter((s) => s.is_completed).length}/{task.subtasks.length}
-              </span>
-            )}
-            {task.outlook_task_id && (
-              <span className="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-[11px] font-medium text-blue-600">
-                <MessageSquare className="h-3 w-3" /> Outlook
               </span>
             )}
           </div>

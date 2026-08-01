@@ -51,7 +51,7 @@ export default function Dashboard() {
       {!tasks || tasks.length === 0 ? (
         <EmptyState
           title="No tasks assigned to you yet"
-          description="Open a list and assign yourself a task, or import from Outlook."
+          description="Open a list and create a task, then assign it to yourself to see it here."
         />
       ) : (
         <div className="space-y-6">

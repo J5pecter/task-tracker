@@ -7,7 +7,6 @@ import {
   Inbox,
   ListTodo,
   LogOut,
-  Mail,
   Plus,
   Settings as SettingsIcon,
   CalendarDays,
@@ -35,7 +34,6 @@ export function Sidebar() {
       <nav className="px-2">
         <SidebarLink to="/" icon={Inbox} label="My Tasks" end />
         <SidebarLink to="/calendar" icon={CalendarDays} label="Calendar" />
-        <SidebarLink to="/outlook" icon={Mail} label="Outlook" />
       </nav>
 
       <div className="scrollbar-thin mt-4 flex-1 overflow-y-auto px-2">
