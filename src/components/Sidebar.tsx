@@ -5,6 +5,7 @@ import {
   CheckSquare,
   ChevronDown,
   ChevronRight,
+  ClipboardList,
   Inbox,
   ListTodo,
   LogOut,
@@ -45,6 +46,15 @@ export function Sidebar() {
         >
           <BarChart3 className="h-4 w-4" />
           VRM MIS
+        </a>
+        <a
+          href="/action-tracker/"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
+        >
+          <ClipboardList className="h-4 w-4" />
+          Action Items
         </a>
       </nav>
 
