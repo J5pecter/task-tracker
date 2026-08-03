@@ -76,9 +76,6 @@ export interface Task {
   position: number;
   is_completed: boolean;
   recurrence: RecurrenceRule | null;
-  outlook_task_id: string | null;
-  outlook_list_id: string | null;
-  outlook_synced_at: string | null;
   created_by: string | null;
   created_at: string;
   updated_at: string;
