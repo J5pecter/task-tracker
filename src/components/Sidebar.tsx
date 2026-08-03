@@ -37,15 +37,7 @@ export function Sidebar() {
       <nav className="px-2">
         <SidebarLink to="/" icon={Inbox} label="My Tasks" end />
         <SidebarLink to="/calendar" icon={CalendarDays} label="Calendar" />
-        <a
-          href="/action-tracker/"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        >
-          <ClipboardList className="h-4 w-4" />
-          Action Items
-        </a>
+        <SidebarLink to="/action-items" icon={ClipboardList} label="Action Items" />
       </nav>
 
       <div className="scrollbar-thin mt-4 flex-1 overflow-y-auto px-2">

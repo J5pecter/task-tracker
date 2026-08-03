@@ -165,7 +165,7 @@ function Row({
         {due?.label ?? '—'}
       </div>
       <button
-        className="text-slate-300 hover:text-red-600"
+        className="text-slate-500 hover:text-red-500"
         title="Delete task"
         onClick={(e) => {
           e.stopPropagation();

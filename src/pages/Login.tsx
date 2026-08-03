@@ -23,8 +23,16 @@ export default function Login() {
       if (mode === 'signin') {
         await signInWithPassword(email, password);
       } else {
-        await signUp(email, password, fullName);
-        notify('Account created. Check your email if confirmation is required.', 'success');
+        const { needsConfirmation } = await signUp(email, password, fullName);
+        if (needsConfirmation) {
+          notify(
+            'Account created. This project still has email confirmation turned on — check your inbox, or turn it off in Supabase (Auth → Providers → Email) to sign in instantly.',
+            'info',
+          );
+          setMode('signin');
+        } else {
+          notify("Account created — you're signed in.", 'success');
+        }
       }
     } catch (err) {
       notify((err as Error).message, 'error');

@@ -6,9 +6,9 @@
   color-scheme: dark;
   --a-cyan: #2ee6ff;
   --a-violet: #b45cff;
-  --glass: rgba(255, 255, 255, 0.07);
-  --glass-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
-  --hair: rgba(255, 255, 255, 0.16);
+  --glass: rgba(255, 255, 255, 0.10);
+  --glass-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.08));
+  --hair: rgba(255, 255, 255, 0.18);
 }
 
 html,
@@ -24,10 +24,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   background:
-    radial-gradient(1100px 700px at 8% -10%, rgba(123, 47, 247, 0.55), transparent 60%),
-    radial-gradient(1000px 800px at 100% 0%, rgba(34, 211, 238, 0.28), transparent 55%),
-    radial-gradient(900px 900px at 90% 110%, rgba(180, 92, 255, 0.32), transparent 55%),
-    linear-gradient(160deg, #1a0533 0%, #26094d 45%, #3a1180 100%);
+    radial-gradient(1100px 700px at 8% -10%, rgba(123, 47, 247, 0.42), transparent 60%),
+    radial-gradient(1000px 800px at 100% 0%, rgba(34, 211, 238, 0.24), transparent 55%),
+    radial-gradient(900px 900px at 90% 110%, rgba(180, 92, 255, 0.26), transparent 55%),
+    linear-gradient(160deg, #241148 0%, #331a6b 45%, #46248f 100%);
   background-attachment: fixed;
 }
 
@@ -144,8 +144,8 @@ body::after {
    becomes frosted glass so the gradient reads through it. */
 .bg-white {
   background: var(--glass-strong) !important;
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(13px) saturate(135%);
+  -webkit-backdrop-filter: blur(13px) saturate(135%);
 }
 
 /* Native form controls tinted to the accent */

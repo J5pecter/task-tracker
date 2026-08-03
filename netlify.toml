@@ -31,6 +31,7 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
+    # SAMEORIGIN (not DENY) so the app can embed /action-tracker/ in an in-app iframe.
+    X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"

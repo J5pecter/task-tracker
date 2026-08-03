@@ -18,6 +18,7 @@ import { Avatar, LabelChip } from './ui/Badges';
 import { formatDueDate, formatDuration, formatMinutes } from '@/lib/format';
 import { useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
 import { useAuth } from '@/hooks/useAuth';
+import { useToast } from './ui/Toast';
 
 interface TaskCardProps {
   task: Task;
@@ -92,6 +93,7 @@ function CardMenu({ task }: { task: Task }) {
   const update = useUpdateTask(task.list_id);
   const del = useDeleteTask(task.list_id);
   const navigate = useNavigate();
+  const { notify } = useToast();
   const mine = !!user && task.assignee_id === user.id;
 
   const itemClass = 'flex w-full items-center gap-2 rounded px-2 py-1.5 text-xs text-slate-700 data-[focus]:bg-slate-100';
@@ -101,9 +103,9 @@ function CardMenu({ task }: { task: Task }) {
       <Menu.Button
         onClick={(e) => e.stopPropagation()}
         title="More actions"
-        className="rounded p-1 text-slate-300 hover:bg-slate-100 hover:text-slate-600"
+        className="rounded-md p-1 text-slate-500 hover:bg-slate-100 hover:text-white"
       >
-        <MoreVertical className="h-4 w-4" />
+        <MoreVertical className="h-[18px] w-[18px]" />
       </Menu.Button>
       <Menu.Items
         anchor="bottom end"
@@ -137,7 +139,11 @@ function CardMenu({ task }: { task: Task }) {
             className={clsx(itemClass, 'text-red-600')}
             onClick={(e) => {
               e.stopPropagation();
-              if (confirm(`Delete "${task.title}"?`)) del.mutate(task.id);
+              if (confirm(`Delete "${task.title}"?`))
+                del.mutate(task.id, {
+                  onSuccess: () => notify('Task deleted', 'success'),
+                  onError: (err) => notify(`Couldn't delete: ${(err as Error).message}`, 'error'),
+                });
             }}
           >
             <Trash2 className="h-3.5 w-3.5" /> Delete

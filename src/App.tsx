@@ -10,6 +10,7 @@ import ListView from './pages/ListView';
 import BoardView from './pages/BoardView';
 import CalendarView from './pages/CalendarView';
 import TaskDetail from './pages/TaskDetail';
+import ActionItems from './pages/ActionItems';
 import Settings from './pages/Settings';
 import SearchResults from './pages/SearchResults';
 
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/list/:listId/calendar" element={<CalendarView />} />
         <Route path="/task/:taskId" element={<TaskDetail />} />
         <Route path="/calendar" element={<CalendarView />} />
+        <Route path="/action-items" element={<ActionItems />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
