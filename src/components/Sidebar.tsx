@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  BarChart3,
   CheckSquare,
   ChevronDown,
   ChevronRight,
@@ -38,15 +37,6 @@ export function Sidebar() {
       <nav className="px-2">
         <SidebarLink to="/" icon={Inbox} label="My Tasks" end />
         <SidebarLink to="/calendar" icon={CalendarDays} label="Calendar" />
-        <a
-          href="/vrm-mis.html"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100"
-        >
-          <BarChart3 className="h-4 w-4" />
-          VRM MIS
-        </a>
         <a
           href="/action-tracker/"
           target="_blank"
