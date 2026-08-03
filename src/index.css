@@ -3,7 +3,12 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
+  --a-cyan: #2ee6ff;
+  --a-violet: #b45cff;
+  --glass: rgba(255, 255, 255, 0.07);
+  --glass-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  --hair: rgba(255, 255, 255, 0.16);
 }
 
 html,
@@ -13,16 +18,69 @@ body,
 }
 
 body {
-  @apply bg-slate-50 text-slate-800 antialiased;
+  margin: 0;
+  color: #fff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(1100px 700px at 8% -10%, rgba(123, 47, 247, 0.55), transparent 60%),
+    radial-gradient(1000px 800px at 100% 0%, rgba(34, 211, 238, 0.28), transparent 55%),
+    radial-gradient(900px 900px at 90% 110%, rgba(180, 92, 255, 0.32), transparent 55%),
+    linear-gradient(160deg, #1a0533 0%, #26094d 45%, #3a1180 100%);
+  background-attachment: fixed;
 }
 
-/* Thin, unobtrusive scrollbars for the app panes. */
+/* ambient drifting bokeh, painted behind everything */
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+}
+body::before {
+  width: 460px;
+  height: 460px;
+  left: -80px;
+  top: 6%;
+  background: radial-gradient(circle, #7b2ff7, transparent 70%);
+  animation: drift 24s ease-in-out infinite;
+}
+body::after {
+  width: 380px;
+  height: 380px;
+  right: 4%;
+  bottom: -120px;
+  background: radial-gradient(circle, #22d3ee, transparent 70%);
+  animation: drift 20s ease-in-out infinite -8s;
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(40px, -30px) scale(1.1);
+  }
+}
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* thin, translucent scrollbars */
 .scrollbar-thin::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-track {
   background: transparent;
@@ -30,24 +88,74 @@ body {
 
 @layer components {
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-brand-400/70 disabled:opacity-50 disabled:cursor-not-allowed;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+    @apply btn text-[#08111f];
+    background: linear-gradient(120deg, #2ee6ff, #b45cff);
+    box-shadow: 0 6px 20px rgba(46, 230, 255, 0.3);
+  }
+  .btn-primary:hover {
+    filter: brightness(1.07);
   }
   .btn-secondary {
-    @apply btn bg-white text-slate-700 border border-slate-300 hover:bg-slate-50;
+    @apply btn text-white;
+    background: var(--glass);
+    border: 1px solid var(--hair);
+    backdrop-filter: blur(12px);
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.13);
   }
   .btn-ghost {
-    @apply btn text-slate-600 hover:bg-slate-100;
+    @apply btn text-slate-600;
+  }
+  .btn-ghost:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.09);
   }
   .input {
-    @apply w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500;
+    @apply w-full rounded-lg px-3 py-2 text-sm text-white focus:outline-none;
+    background: rgba(10, 4, 30, 0.35);
+    border: 1px solid var(--hair);
+  }
+  .input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+  .input:focus {
+    border-color: var(--a-cyan);
+    box-shadow: 0 0 0 1px var(--a-cyan);
   }
   .label {
-    @apply block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1;
+    @apply block text-xs font-semibold uppercase tracking-wide mb-1;
+    color: rgba(255, 255, 255, 0.55);
   }
   .card {
-    @apply bg-white rounded-lg border border-slate-200 shadow-sm;
+    @apply rounded-2xl;
+    background: var(--glass-strong);
+    border: 1px solid var(--hair);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    box-shadow: 0 16px 40px rgba(10, 2, 30, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18);
   }
+}
+
+/* Utility override: every `bg-white` surface (sidebar, header, menus, popovers)
+   becomes frosted glass so the gradient reads through it. */
+.bg-white {
+  background: var(--glass-strong) !important;
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+}
+
+/* Native form controls tinted to the accent */
+input[type='checkbox'],
+input[type='radio'] {
+  accent-color: #2ee6ff;
+}
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1) opacity(0.7);
+}
+::selection {
+  background: rgba(46, 230, 255, 0.35);
 }

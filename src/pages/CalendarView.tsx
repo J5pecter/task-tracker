@@ -89,7 +89,7 @@ export default function CalendarView() {
                 key={key}
                 className={clsx(
                   'min-h-[110px] border-b border-r border-slate-100 p-1.5',
-                  !isSameMonth(day, cursor) && 'bg-slate-50/60',
+                  !isSameMonth(day, cursor) && 'bg-slate-50',
                 )}
               >
                 <div

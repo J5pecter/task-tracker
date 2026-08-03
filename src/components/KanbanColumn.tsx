@@ -27,7 +27,7 @@ export function KanbanColumn({
         ref={setNodeRef}
         className={clsx(
           'scrollbar-thin flex-1 space-y-2 overflow-y-auto rounded-lg p-2 transition-colors',
-          isOver ? 'bg-brand-50' : 'bg-slate-100/60',
+          isOver ? 'bg-brand-50' : 'bg-slate-100',
         )}
       >
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
