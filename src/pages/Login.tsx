@@ -6,12 +6,10 @@ import { useToast } from '@/components/ui/Toast';
 import { Spinner } from '@/components/ui/Spinner';
 
 export default function Login() {
-  const { session, loading, signInWithPassword, signUp } = useAuth();
+  const { session, loading, signInWithPassword } = useAuth();
   const { notify } = useToast();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [busy, setBusy] = useState(false);
 
   if (!loading && session) return <Navigate to="/" replace />;
@@ -20,22 +18,9 @@ export default function Login() {
     e.preventDefault();
     setBusy(true);
     try {
-      if (mode === 'signin') {
-        await signInWithPassword(email, password);
-      } else {
-        const { needsConfirmation } = await signUp(email, password, fullName);
-        if (needsConfirmation) {
-          notify(
-            'Account created. This project still has email confirmation turned on — check your inbox, or turn it off in Supabase (Auth → Providers → Email) to sign in instantly.',
-            'info',
-          );
-          setMode('signin');
-        } else {
-          notify("Account created — you're signed in.", 'success');
-        }
-      }
+      await signInWithPassword(email, password);
     } catch (err) {
-      notify((err as Error).message, 'error');
+      notify((err as Error).message || 'Sign in failed', 'error');
     } finally {
       setBusy(false);
     }
@@ -49,18 +34,10 @@ export default function Login() {
             <CheckSquare className="h-7 w-7" />
           </div>
           <h1 className="text-2xl font-bold text-slate-800">TaskTracker</h1>
-          <p className="text-sm text-slate-500">
-            {mode === 'signin' ? 'Sign in to your workspace' : 'Create your account'}
-          </p>
+          <p className="text-sm text-slate-500">Sign in to your workspace</p>
         </div>
 
         <form onSubmit={submit} className="space-y-4">
-          {mode === 'signup' && (
-            <div>
-              <label className="label">Full name</label>
-              <input value={fullName} onChange={(e) => setFullName(e.target.value)} className="input" required />
-            </div>
-          )}
           <div>
             <label className="label">Email</label>
             <input
@@ -68,6 +45,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="input"
+              autoComplete="username"
               required
             />
           </div>
@@ -78,24 +56,18 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input"
-              minLength={6}
+              autoComplete="current-password"
               required
             />
           </div>
           <button type="submit" className="btn-primary w-full" disabled={busy}>
             {busy && <Spinner className="h-4 w-4" />}
-            {mode === 'signin' ? 'Sign in' : 'Sign up'}
+            Sign in
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-slate-500">
-          {mode === 'signin' ? "Don't have an account?" : 'Already have an account?'}{' '}
-          <button
-            className="font-medium text-brand-600 hover:underline"
-            onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-          >
-            {mode === 'signin' ? 'Sign up' : 'Sign in'}
-          </button>
+          Need access? Ask your admin to create an account for you.
         </p>
       </div>
     </div>

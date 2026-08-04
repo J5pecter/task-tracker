@@ -12,10 +12,12 @@ import {
   Settings as SettingsIcon,
   CalendarDays,
   Users,
+  ShieldCheck,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useWorkspaces, useLists, useCreateList, useCreateWorkspace } from '@/hooks/useProjects';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEmail } from '@/lib/admin';
 import { useToast } from './ui/Toast';
 import { Avatar } from './ui/Badges';
 import { Modal } from './ui/Modal';
@@ -38,6 +40,7 @@ export function Sidebar() {
         <SidebarLink to="/" icon={Inbox} label="My Tasks" end />
         <SidebarLink to="/calendar" icon={CalendarDays} label="Calendar" />
         <SidebarLink to="/action-items" icon={ClipboardList} label="Action Items" />
+        {isAdminEmail(user?.email) && <SidebarLink to="/users" icon={ShieldCheck} label="Users" />}
       </nav>
 
       <div className="scrollbar-thin mt-4 flex-1 overflow-y-auto px-2">

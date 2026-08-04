@@ -11,6 +11,7 @@ import BoardView from './pages/BoardView';
 import CalendarView from './pages/CalendarView';
 import TaskDetail from './pages/TaskDetail';
 import ActionItems from './pages/ActionItems';
+import AdminUsers from './pages/AdminUsers';
 import Settings from './pages/Settings';
 import SearchResults from './pages/SearchResults';
 
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/action-items" element={<ActionItems />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/users" element={<AdminUsers />} />
         <Route path="/settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
